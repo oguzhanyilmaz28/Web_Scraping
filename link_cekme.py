@@ -41,6 +41,5 @@ def scrape_link(url):
     for row in urun_url_liste:
         writer.writerow(row)
     f.close()
-
 for x in range(1):
     scrape_link(sayfa_url_liste[x])
