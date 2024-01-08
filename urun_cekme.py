@@ -25,7 +25,9 @@ for i in range(len(linkler)):
     kaynak = browser.page_source
     bs = BeautifulSoup(kaynak, "html.parser")
     urunFiyat = bs.find("span", attrs={"class": "product-list__price"}).text
-    urunMarka = bs.find("h1", attrs={"class": "product-list__product-name"}).text
+    urunBilgi = bs.findAll("a", attrs={"class": "bradcrumb-item"})
+    urunMarka = urunBilgi[3].text
+    urunModel = urunBilgi[4].text
     urunYildiz = (bs.find('span', attrs={"class": "score"})).get("style")
 
     yorumlar_linki = browser.find_element(By.CSS_SELECTOR, 'a[href="#yorumlar"]')
