@@ -28,6 +28,7 @@ for i in range(len(linkler)):
     urunBilgi = bs.findAll("a", attrs={"class": "bradcrumb-item"})
     urunMarka = urunBilgi[3].text
     urunModel = urunBilgi[4].text
+    toplamYorum = (bs.find("a", attrs={"class": "comment-count"}).text).replace("(", "").replace(")", "")
     urunYildiz = (bs.find('span', attrs={"class": "score"})).get("style")
 
     yorumlar_linki = browser.find_element(By.CSS_SELECTOR, 'a[href="#yorumlar"]')
@@ -36,6 +37,7 @@ for i in range(len(linkler)):
 
     kaynak = browser.page_source
     bs = BeautifulSoup(kaynak, "html.parser")
+    ortalamaRank = bs.find("strong", attrs={"id": "averageRankNum"}).text
     urunYorumlar = bs.find("div", attrs={"class": "comment-section"})
 
     yorumlar = urunYorumlar.find_all("div", attrs={"class": "comment"})
