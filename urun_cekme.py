@@ -1,6 +1,8 @@
 import csv
+import time
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from selenium.webdriver.common.by import By
 
 linkler = []
 
@@ -25,3 +27,24 @@ for i in range(len(linkler)):
     urunFiyat = bs.find("span", attrs={"class": "product-list__price"}).text
     urunMarka = bs.find("h1", attrs={"class": "product-list__product-name"}).text
     urunYildiz = (bs.find('span', attrs={"class": "score"})).get("style")
+
+    yorumlar_linki = browser.find_element(By.CSS_SELECTOR, 'a[href="#yorumlar"]')
+    yorumlar_linki.click()
+    time.sleep(5)
+
+    kaynak = browser.page_source
+    bs = BeautifulSoup(kaynak, "html.parser")
+    urunYorumlar = bs.find("div", attrs={"class": "comment-section"})
+
+    yorumlar = urunYorumlar.find_all("div", attrs={"class": "comment"})
+    rank = urunYorumlar.find_all("div", attrs={"class": "wrapper-comments commetPrd"})
+    isimler = urunYorumlar.find_all("div", attrs={"class": "comment-name"})
+    tarihler = urunYorumlar.find_all("span", attrs={"class": "replaced-date"})
+
+    """    print(isimler[0].text)
+    print(tarihler[0].text)
+
+    print(yorumlar[0].text)
+    rank[0].get('data-rank')"""
+    print(rank[0].get('data-rank'))
+    time.sleep(300)
