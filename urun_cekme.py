@@ -1,8 +1,35 @@
 import csv
 import time
+import sqlite3 as sql
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
+
+con = sql.connect("urun.db")
+cursor = con.cursor()
+
+def tabloOlustur():
+    cursor.execute("CREATE TABLE IF NOT EXISTS urun (urunId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                   "adi TEXT NOT NULL,"
+                   "marka TEXT NOT NULL,"
+                   "fiyat INTEGER,"
+                   "link TEXT NOT NULL UNIQUE,"
+                   "ort_yildiz INTEGER,"
+                   "yorum_sayisi INTEGER)")
+
+    cursor.execute("CREATE TABLE IF NOT EXISTS yorum (yorumId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    "isim TEXT NOT NULL,"
+                    "yorum TEXT NOT NULL,"
+                    "tarih TEXT NOT NULL,"
+                    "yildiz INTEGER NOT NULL,"
+                    "urunId INTEGER NOT NULL,"
+                    "FOREIGN KEY (urunId) REFERENCES urun(urunId))")
+
+
+tabloOlustur()
+yas = ["abc", "avs", 5545, "tfj", 4, 55]
+cursor.execute('INSERT INTO urun (adi, marka, fiyat, link, ort_yildiz, yorum_sayisi) VALUES (?, ?, ?, ?, ?, ?)', yas)
+cursor.close()
 
 linkler = []
 
