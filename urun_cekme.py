@@ -41,10 +41,10 @@ for i in range(len(linkler)):
     isimler = urunYorumlar.find_all("div", attrs={"class": "comment-name"})
     tarihler = urunYorumlar.find_all("span", attrs={"class": "replaced-date"})
 
-    """    print(isimler[0].text)
+    print(isimler[0].text)
     print(tarihler[0].text)
 
     print(yorumlar[0].text)
-    rank[0].get('data-rank')"""
-    print(rank[0].get('data-rank'))
+    rank[0].get('data-rank')
+
     time.sleep(300)
