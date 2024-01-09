@@ -25,33 +25,10 @@ def scrape_link(url):
     time.sleep(3)
 
     bs = BeautifulSoup(browser.page_source, "html.parser")
-
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[1]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[2]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[3]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[4]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[5]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[6]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[7]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[8]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[9]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[10]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[11]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[12]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[13]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[14]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[15]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[16]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[17]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[18]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[19]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[20]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[21]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[22]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[23]/div[1]/a').get_attribute('href'))
-    urun_url_liste.append(browser.find_element(By.XPATH,'//*[@id="productsLoad"]/div[24]/div[1]/a').get_attribute('href'))
-
-
+    for c in range(1,25) :
+        urun_url_liste.append(
+            browser.find_element(By.XPATH, '//*[@id="productsLoad"]/div['+str(c)+']/div[1]/a').get_attribute('href'))
+        c+=1
 
     f = open('link.csv', 'w', newline='', encoding="utf-8")
     baslik = ["link"]

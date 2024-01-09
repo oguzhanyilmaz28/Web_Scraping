@@ -1,4 +1,4 @@
-import csv
+"""import csv
 import time
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -48,3 +48,19 @@ for i in range(len(linkler)):
     rank[0].get('data-rank')
 
     time.sleep(300)
+"""
+
+import sqlite3
+
+con = sqlite3.connect("urun.db")
+
+cursor = con.cursor()
+
+
+def tabloyaurunekleme():
+    cursor.execute("INSERT INTO urun VALUES { 'iphone1','iphone',12,'saddsa',4,'cok iyii',1}")
+    con.commit()
+    con.close()
+
+
+tabloyaurunekleme()
