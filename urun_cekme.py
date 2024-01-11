@@ -1,11 +1,12 @@
 import csv
 import time
-import sqlite3 as sql
+import sqlite3
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 
-con = sql.connect("urun.db")
+
+con = sqlite3.connect("urun.db")
 cursor = con.cursor()
 
 def tabloOlustur():
@@ -19,11 +20,11 @@ def tabloOlustur():
                        "yorum_sayisi INTEGER)")
 
     cursor.execute("CREATE TABLE IF NOT EXISTS yorum (yorumId INTEGER PRIMARY KEY AUTOINCREMENT,"
-                       "isim TEXT NOT NULL,"
-                       "yorum TEXT NOT NULL,"
-                       "tarih TEXT NOT NULL,"
-                       "yildiz INTEGER NOT NULL,"
-                       "urunId INTEGER NOT NULL,"
+                       "isim TEXT,"
+                       "yorum TEXT,"
+                       "tarih TEXT,"
+                       "yildiz INTEGER ,"
+                       "urunId INTEGER ,"
                        "FOREIGN KEY (urunId) REFERENCES urun(urunId))")
 
 
@@ -49,51 +50,62 @@ for i in range(len(linkler)):
     browser.get(linkler[i][0])
     kaynak = browser.page_source
     bs = BeautifulSoup(kaynak, "html.parser")
-    stokBilgi = bs.find("span", attrs={"class": "icon-shopping-card"}).text
-    if stokBilgi == "Sepete Ekle":
+    #stokBilgi = bs.find("span", attrs={"class": "icon-shopping-card"}).text
+    """    if stokBilgi == "Sepete Ekle":
         urunFiyat = bs.find("span", attrs={"class": "product-list__price"}).text
     else:
-        urunFiyat = 0
+        urunFiyat = 0"""
     urunBilgi = bs.findAll("a", attrs={"class": "bradcrumb-item"})
     urunMarka = urunBilgi[3].text
     urunModel = urunBilgi[4].text
     toplamYorum = (bs.find("a", attrs={"class": "comment-count"}).text).replace("(", "").replace(")", "")
     urunYildiz = (bs.find('span', attrs={"class": "score"})).get("style")
 
-    yorumlar_linki = browser.find_element(By.CSS_SELECTOR, 'a[id="allCommentBtn"]')
-    time.sleep(3)
-    yorumlar_linki.click()
-    time.sleep(2)
+    connection = sqlite3.connect("urun.db")
+    cursor = connection.cursor()
+
+    sql_sorgu = "INSERT INTO urun (adi,marka,fiyat,link,ort_yildiz,yorum_sayisi) VALUES ( ?, ?, ?, ?, ?, ?)"
+    veri = ("urunModel", "urunMarka", 0, "linkler", 0, 0)
+
+    # Veritabanına ekleme işlemi
+    cursor.execute(sql_sorgu, veri)
+    connection.commit()
+    connection.close()
+
+
+"""
+    try:
+        yorumlar_linki = browser.find_element(By.CSS_SELECTOR, 'a[id="allCommentBtn"]')
+        time.sleep(1)
+        yorumlar_linki.click()
+        time.sleep(2)
+    except:
+        print("yorumyok")
+
 
     kaynak = browser.page_source
     bs = BeautifulSoup(kaynak, "html.parser")
     ortalamaRank = bs.find("strong", attrs={"id": "averageRankNum"}).text
     urunYorumlar = bs.find("div", attrs={"class": "comment-section"})
 
-    yorumlar = urunYorumlar.find_all("div", attrs={"class": "comment"})
-    rank = urunYorumlar.find_all("div", attrs={"class": "wrapper-comments commetPrd"})
     isimler = urunYorumlar.find_all("div", attrs={"class": "comment-name"})
+    yorumlar = urunYorumlar.find_all("div", attrs={"class": "comment"})
     tarihler = urunYorumlar.find_all("span", attrs={"class": "replaced-date"})
+    rank = urunYorumlar.find_all("div", attrs={"class": "wrapper-comments commetPrd"})
 
+    #ilk 100 yorumu alması için
     yorumlar = yorumlar[0:100]
 
+    connection = sqlite3.connect("urun.db")
+    cursor = connection.cursor()
+
     for a in range(len(yorumlar)):
-        print(yorumlar[a].text)
-        print(tarihler[a].text)
-        print(isimler[a].text)
-        print(rank[a].get('data-rank'))
+        sql_sorgu = "INSERT INTO yorum (isim, yorum, tarih, yildiz,urunId) VALUES ( ?, ?, ?, ?, ?)"
+        veri = (isimler[a].text, yorumlar[a].text, tarihler[a].text, rank[a].get('data-rank'), i)
+        # Veritabanına ekleme işlemi
+        cursor.execute(sql_sorgu, veri)
 
-import sqlite3
-
-con = sqlite3.connect("urun.db")
-
-cursor = con.cursor()
-
-
-def tabloyaurunekleme():
-    cursor.execute("INSERT INTO urun VALUES { 'iphone1','iphone',12,'saddsa',4,'cok iyii',1}")
-    con.commit()
-    con.close()
-
-
-tabloyaurunekleme()
+    # Değişiklikleri kaydet ve bağlantıyı kapat
+    connection.commit()
+    connection.close()
+"""
