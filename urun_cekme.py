@@ -5,18 +5,25 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 
+# Programın başlangıç zamanını al
+start_time = time.time()
 
 con = sqlite3.connect("urun.db")
 cursor = con.cursor()
+
+# Tablo varsa silme kodu
+cursor.execute("DROP TABLE IF EXISTS urun")
+cursor.execute("DROP TABLE IF EXISTS yorum")
 
 def tabloOlustur():
 
     cursor.execute("CREATE TABLE IF NOT EXISTS urun (urunId INTEGER PRIMARY KEY AUTOINCREMENT,"
                        "adi TEXT NOT NULL,"
                        "marka TEXT NOT NULL,"
+                       "stok TEXT NOT NULL,"
                        "fiyat INTEGER,"
                        "link TEXT NOT NULL,"
-                       "ort_yildiz INTEGER,"
+                       "ort_yildiz REAL,"
                        "yorum_sayisi INTEGER)")
 
     cursor.execute("CREATE TABLE IF NOT EXISTS yorum (yorumId INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -39,53 +46,53 @@ with open(link_yolu, encoding="utf-8") as csvfile:
     linklerCSV = csv.reader(csvfile)
 
     for link in linklerCSV:
-        linkler.append(link)
+        linkler.append(link[0])
 
 # Ilk indeksdeki 'link' kelimesini silme
 del linkler[0]
-
 browser = webdriver.Chrome()
 
 for i in range(len(linkler)):
-    browser.get(linkler[i][0])
+    browser.get(linkler[i])
     kaynak = browser.page_source
     bs = BeautifulSoup(kaynak, "html.parser")
-    #stokBilgi = bs.find("span", attrs={"class": "icon-shopping-card"}).text
-    """    if stokBilgi == "Sepete Ekle":
-        urunFiyat = bs.find("span", attrs={"class": "product-list__price"}).text
-    else:
-        urunFiyat = 0"""
+
     urunBilgi = bs.findAll("a", attrs={"class": "bradcrumb-item"})
     urunMarka = urunBilgi[3].text
     urunModel = urunBilgi[4].text
-    toplamYorum = (bs.find("a", attrs={"class": "comment-count"}).text).replace("(", "").replace(")", "")
-    urunYildiz = (bs.find('span', attrs={"class": "score"})).get("style")
+    toplamYorum = int((bs.find("a", attrs={"class": "comment-count"}).text).replace("(", "").replace(")", ""))
+    stokBilgi = bs.find("div", attrs={"class": "d-cell product-button--cell"}).text  #class="btn btn-success detail-cart-button btn-nonstock"
+
+    if stokBilgi == "\n\nTükendi\n\n":
+        stokDurum = "Yok"
+        urunFiyat = 0
+    else:
+        stokDurum = "Var"
+        urunFiyat = bs.find("span", attrs={"class": "product-list__price"}).text
+
+    print(urunFiyat)
+    try:
+        yorumlar_linki = browser.find_element(By.CSS_SELECTOR, 'a[id="allCommentBtn"]')
+        yorumlar_linki.click()
+        time.sleep(1)
+    except:
+        print("Yorum Yok")
+
+    kaynak = browser.page_source
+    bs = BeautifulSoup(kaynak, "html.parser")
+    ortalamaRank = float(bs.find("strong", attrs={"id": "averageRankNum"}).text)
 
     connection = sqlite3.connect("urun.db")
     cursor = connection.cursor()
 
-    sql_sorgu = "INSERT INTO urun (adi,marka,fiyat,link,ort_yildiz,yorum_sayisi) VALUES ( ?, ?, ?, ?, ?, ?)"
-    veri = ("urunModel", "urunMarka", 0, "linkler", 0, 0)
+    sql_sorgu = "INSERT INTO urun (adi,marka,stok, fiyat,link,ort_yildiz,yorum_sayisi) VALUES ( ?, ?, ?, ?, ?, ?, ?)"
+    veri = (urunModel, urunMarka, stokDurum, urunFiyat, linkler[i], ortalamaRank, toplamYorum)
 
     # Veritabanına ekleme işlemi
     cursor.execute(sql_sorgu, veri)
     connection.commit()
     connection.close()
 
-
-"""
-    try:
-        yorumlar_linki = browser.find_element(By.CSS_SELECTOR, 'a[id="allCommentBtn"]')
-        time.sleep(1)
-        yorumlar_linki.click()
-        time.sleep(2)
-    except:
-        print("yorumyok")
-
-
-    kaynak = browser.page_source
-    bs = BeautifulSoup(kaynak, "html.parser")
-    ortalamaRank = bs.find("strong", attrs={"id": "averageRankNum"}).text
     urunYorumlar = bs.find("div", attrs={"class": "comment-section"})
 
     isimler = urunYorumlar.find_all("div", attrs={"class": "comment-name"})
@@ -108,4 +115,10 @@ for i in range(len(linkler)):
     # Değişiklikleri kaydet ve bağlantıyı kapat
     connection.commit()
     connection.close()
-"""
+
+# Programın bitiş zamanını al
+end_time = time.time()
+# Geçen süreyi hesapla
+elapsed_time = end_time - start_time
+
+print(f"Programın çalışma süresi: {elapsed_time} saniye")
