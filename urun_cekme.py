@@ -108,7 +108,7 @@ for i in range(len(linkler)):
 
     for a in range(len(yorumlar)):
         sql_sorgu = "INSERT INTO yorum (isim, yorum, tarih, yildiz,urunId) VALUES ( ?, ?, ?, ?, ?)"
-        veri = (isimler[a].text, yorumlar[a].text, tarihler[a].text, rank[a].get('data-rank'), i)
+        veri = (isimler[a].text, yorumlar[a].text, tarihler[a].text, rank[a].get('data-rank'), i+1)
         # Veritabanına ekleme işlemi
         cursor.execute(sql_sorgu, veri)
 
