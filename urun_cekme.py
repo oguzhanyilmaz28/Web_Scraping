@@ -49,7 +49,7 @@ with open(link_yolu, encoding="utf-8") as csvfile:
     for link in linklerCSV:
         linkler.append(link[0])
 
-# Ilk indeksdeki 'link' kelimesini silme
+# İlk indeksdeki 'link' kelimesini silme
 del linkler[0]
 browser = webdriver.Chrome()
 
@@ -58,6 +58,7 @@ for i in range(len(linkler)):
     kaynak = browser.page_source
     bs = BeautifulSoup(kaynak, "html.parser")
 
+    # İstedigimiz urun bilgilerinin bulunmasi
     urunBilgi = bs.findAll("a", attrs={"class": "bradcrumb-item"})
     urunKategori = urunBilgi[2].text
     urunMarka = urunBilgi[3].text
@@ -79,6 +80,7 @@ for i in range(len(linkler)):
     except:
         print("Yorum Yok")
 
+    # Yorumlar kısmı acilinca html.parser in güncellenmesi 
     kaynak = browser.page_source
     bs = BeautifulSoup(kaynak, "html.parser")
     ortalamaRank = float(bs.find("strong", attrs={"id": "averageRankNum"}).text)
@@ -89,15 +91,15 @@ for i in range(len(linkler)):
     # Veritabanına ekleme işlemi
     cursor.execute(sql_sorgu, veri)
     con.commit()
-
+    
+    # İstedigimiz yorum bilgilerinin bulunmasi
     urunYorumlar = bs.find("div", attrs={"class": "comment-section"})
-
     isimler = urunYorumlar.find_all("div", attrs={"class": "comment-name"})
     yorumlar = urunYorumlar.find_all("div", attrs={"class": "comment"})
     tarihler = urunYorumlar.find_all("span", attrs={"class": "replaced-date"})
     rank = urunYorumlar.find_all("div", attrs={"class": "wrapper-comments commetPrd"})
 
-    #ilk 100 yorumu alması için
+    # ilk 100 yorumu alması için
     yorumlar = yorumlar[0:100]
 
     for a in range(len(yorumlar)):
