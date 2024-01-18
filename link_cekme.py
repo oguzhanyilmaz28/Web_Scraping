@@ -5,7 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
 import time
 
-#sitenin ana sayfasından baslayarak cep telefonu kısmının bulunması
+# Sitenin ana sayfasından baslayarak cep telefonu kısmının bulunması
 anaurl = "https://www.vatanbilgisayar.com/"
 browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 browser.get(anaurl)
@@ -34,17 +34,17 @@ def scrape_link(url):
     browser.get(url)
     time.sleep(3)
 
-#urun url lınklerının alınması
+# Urun url lınklerının alınması
     for c in range(1, 25):
         urun_url = browser.find_element(By.XPATH, '//*[@id="productsLoad"]/div[' + str(c) + ']/div[1]/a').get_attribute('href')
         urun_url_liste.append([urun_url])
 
-#csv dosyasına link kaydediliyor
+# Csv dosyasına link kaydediliyor
     with open('link.csv', 'w', newline='', encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["link"])
         writer.writerows(urun_url_liste)
 
-#kac sayfa gezecek o belirtilir
+# Gezilecek sayfa sayisinin belirtilmesi
 for x in range(9):
     scrape_link(sayfa_url_liste[x])
